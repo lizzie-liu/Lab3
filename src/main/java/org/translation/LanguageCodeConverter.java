@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides the service of converting language codes to their names.
  */
 public class LanguageCodeConverter {
-    private Map<String, String> languageCodes = new HashMap<>();
+    private final Map<String, String> languageCodes = new HashMap<>();
 
     /**
      * Default constructor which will load the language codes from "language-codes.txt"
@@ -31,9 +33,10 @@ public class LanguageCodeConverter {
             List<String> lines = Files.readAllLines(Paths.get(getClass()
                     .getClassLoader().getResource(filename).toURI()));
 
-            for (String line : lines) {
+            for (String line : lines.subList(1, lines.size())) {
                 int length = line.length();
-                this.languageCodes.put(line.substring(length - 2, length), line.substring(0, length));
+                String[] languages = line.split("\t");
+                this.languageCodes.put(languages[0], languages[1]);
             }
         }
         catch (IOException | URISyntaxException ex) {
@@ -48,7 +51,12 @@ public class LanguageCodeConverter {
      * @return the name of the language corresponding to the code
      */
     public String fromLanguageCode(String code) {
-        return languageCodes.get(code);
+        for (String language: this.languageCodes.keySet()) {
+            if (languageCodes.get(language).equals(code)) {
+                return language;
+            }
+        }
+        return null;
     }
 
     /**
@@ -57,7 +65,7 @@ public class LanguageCodeConverter {
      * @return the 2-letter code of the language
      */
     public String fromLanguage(String language) {
-        return languageCodes.get(language);
+        return this.languageCodes.get(language);
     }
 
     /**
@@ -65,6 +73,6 @@ public class LanguageCodeConverter {
      * @return how many languages are included in this code converter.
      */
     public int getNumLanguages() {
-        return languageCodes.size();
+        return this.languageCodes.size();
     }
 }
