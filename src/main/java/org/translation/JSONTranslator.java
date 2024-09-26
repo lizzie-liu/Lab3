@@ -21,6 +21,7 @@ public class JSONTranslator implements Translator {
     // TODO Task: pick appropriate instance variables for this class
     private List<Map<String, String>> countryData = new ArrayList<>();
     private Map<String, List<String>> countryLanguages = new HashMap<>();
+    private Map<String, Map<String, String>> translations = new HashMap<>();
     // [{<alpha2: code>, <alpha3: code>}]
 
     /**
@@ -38,25 +39,37 @@ public class JSONTranslator implements Translator {
     public JSONTranslator(String filename) {
         // read the file to get the data to populate things...
         try {
-
-            String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
             // TODO Task: use the data in the jsonArray to populate your instance variables
             //            Note: this will likely be one of the most substantial pieces of code you write in this lab.
+
+            String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
             JSONArray data = new JSONArray(jsonString);
 
             for (int i = 0; i < data.length(); i++) {
                 JSONObject line = data.getJSONObject(i);
 
-                // Get the country codes
+                // Get the country codes and store them
                 Map<String, String> countryCodes = new HashMap<>();
-                countryCodes.put("alpha2", line.getString("alpha2"));
-                countryCodes.put("alpha3", line.getString("alpha3"));
+                String alpha2 = line.getString("alpha2");
+                String alpha3 = line.getString("alpha3");
+                countryCodes.put("alpha2", alpha2);
+                countryCodes.put("alpha3", alpha3);
                 this.countryData.add(countryCodes);
-             }
 
-            // using this to print the array to check if what i added is right
-            for (int i = 0; i < this.countryData.size(); i++) {
-                System.out.println(this.countryData.get(i));
+                // Extract languages and store translations
+                List<String> languages = new ArrayList<>();
+                Map<String, String> countryTranslations = new HashMap<>();
+
+                for (String key : line.keySet()) {
+                    if (key.length() == 2 && !key.equals("alpha2") && !key.equals("alpha3")) {
+                       //how do I add key???????
+                        languages.add(key);
+                        countryTranslations.put(key, line.getString(key));
+                    }
+                }
+                // Map country to languagelist and for each country
+                this.countryLanguages.put(alpha3, languages);
+                this.translations.put(alpha3, countryTranslations);
             }
 
         }
@@ -69,19 +82,40 @@ public class JSONTranslator implements Translator {
     public List<String> getCountryLanguages(String country) {
         // TODO Task: return an appropriate list of language codes,
         //            but make sure there is no aliasing to a mutable object
-        return new ArrayList<>();
+        if (countryLanguages.containsKey(country)) {
+            //avoid alising
+            return new ArrayList<>(countryLanguages.get(country));
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
     public List<String> getCountries() {
         // TODO Task: return an appropriate list of country codes,
         //            but make sure there is no aliasing to a mutable object
-        return new ArrayList<>();
+        List<String> countries = new ArrayList<>();
+        for (Map<String, String> countryCodeMap : countryData) {
+            // Get the alpha3 for each country
+            countries.add(countryCodeMap.get("alpha3"));
+        }
+        return countries;
     }
 
     @Override
     public String translate(String country, String language) {
         // TODO Task: complete this method using your instance variables as needed
-        return null;
+        if (translations.containsKey(country)) {
+            Map<String, String> countryTranslations = translations.get(country);
+
+            // Check if the requested language translation exists
+            if (countryTranslations.containsKey(language)) {
+                return countryTranslations.get(language);
+            } else {
+                return "Translate not found";
+            }
+        } else {
+            return "Translate not found";
+        }
     }
 }
