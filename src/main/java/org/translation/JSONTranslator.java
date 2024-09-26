@@ -5,9 +5,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * An implementation of the Translator interface which reads in the translation
@@ -16,6 +19,9 @@ import org.json.JSONArray;
 public class JSONTranslator implements Translator {
 
     // TODO Task: pick appropriate instance variables for this class
+    private List<Map<String, String>> countryData = new ArrayList<>();
+    private Map<String, List<String>> countryLanguages = new HashMap<>();
+    // [{<alpha2: code>, <alpha3: code>}]
 
     /**
      * Constructs a JSONTranslator using data from the sample.json resources file.
@@ -34,11 +40,24 @@ public class JSONTranslator implements Translator {
         try {
 
             String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
-
-            JSONArray jsonArray = new JSONArray(jsonString);
-
             // TODO Task: use the data in the jsonArray to populate your instance variables
             //            Note: this will likely be one of the most substantial pieces of code you write in this lab.
+            JSONArray data = new JSONArray(jsonString);
+
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject line = data.getJSONObject(i);
+
+                // Get the country codes
+                Map<String, String> countryCodes = new HashMap<>();
+                countryCodes.put("alpha2", line.getString("alpha2"));
+                countryCodes.put("alpha3", line.getString("alpha3"));
+                this.countryData.add(countryCodes);
+             }
+
+            // using this to print the array to check if what i added is right
+            for (int i = 0; i < this.countryData.size(); i++) {
+                System.out.println(this.countryData.get(i));
+            }
 
         }
         catch (IOException | URISyntaxException ex) {
