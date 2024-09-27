@@ -18,8 +18,6 @@ import org.json.JSONObject;
  */
 public class JSONTranslator implements Translator {
 
-    // TODO Task: pick appropriate instance variables for this class
-    //private List<Map<String, String>> countryData = new ArrayList<>();
     private Map<String, List<String>> countryLanguages = new HashMap<>();
 
     private Map<String, Map<String, String>> translations = new HashMap<>();
@@ -36,25 +34,23 @@ public class JSONTranslator implements Translator {
 
     /**
      * Constructs a JSONTranslator populated using data from the specified resources file.
+     *
      * @param filename the name of the file in resources to load the data from
      * @throws RuntimeException if the resource file can't be loaded properly
      */
     public JSONTranslator(String filename) {
         // read the file to get the data to populate things...
         try {
-            // TODO Task: use the data in the jsonArray to populate your instance variables
-            //            Note: this will likely be one of the most substantial pieces of code you write in this lab.
 
             String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
             JSONArray data = new JSONArray(jsonString);
 
-            for (int i = 0; i < data.length(); i++) {   //loop through each JSONobject
+            for (int i = 0; i < data.length(); i++) {
                 JSONObject line = data.getJSONObject(i);
-                // Extract languages and store translations
                 Map<String, String> countryTranslations = new HashMap<>();
 
                 for (String key : line.keySet()) {
-                    if (!key.equals("alpha2") && !key.equals("alpha3") && !key.equals("id")) {
+                    if (!"alpha2".equals(key) && !"alpha3".equals(key) && !"id".equals(key)) {
                         countryTranslations.put(key, line.getString(key));
                     }
                 }
@@ -69,12 +65,10 @@ public class JSONTranslator implements Translator {
 
     @Override
     public List<String> getCountryLanguages(String country) {
-        // TODO Task: return an appropriate list of language codes,
-        //            but make sure there is no aliasing to a mutable object
         if (countryData.containsKey(country)) {
-            //avoid aliasing
             return new ArrayList<>(countryData.get(country).keySet());
-        } else {
+        }
+        else {
             return new ArrayList<>();
         }
     }
@@ -92,7 +86,8 @@ public class JSONTranslator implements Translator {
         Map<String, String> countryTranslations = countryData.get(country);
         if (countryTranslations != null && countryTranslations.containsKey(language)) {
             return countryTranslations.get(language);
-        } else {
+        }
+        else {
             return "Translate not found";
         }
     }
