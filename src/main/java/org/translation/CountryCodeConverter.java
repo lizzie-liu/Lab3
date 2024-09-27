@@ -1,3 +1,4 @@
+
 package org.translation;
 
 import java.io.IOException;
@@ -7,15 +8,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-// TODO CheckStyle: Wrong lexicographical order for 'java.util.HashMap' import (remove this comment once resolved)
 
 /**
  * This class provides the service of converting country codes to their names.
  */
 public class CountryCodeConverter {
 
-
-    // TODO Task: pick appropriate instance variable(s) to store the data necessary for this class
+    private static final int COUNTRY_CODE_LENGTH = 11;
+    private static final int SECTION_START_OFFSET = 7;
+    private static final int SECTION_END_OFFSET = 4;
     private Map<String, String> countryCodes = new HashMap<>();
 
     /**
@@ -36,10 +37,10 @@ public class CountryCodeConverter {
         try {
             List<String> lines = Files.readAllLines(Paths.get(getClass()
                     .getClassLoader().getResource(filename).toURI()));
-            // TODO Task: use lines to populate the instance variable(s)
+
             for (String line: lines) {
-                this.countryCodes.put(line.substring(0, line.length() - 11),
-                        line.substring(line.length() - 7, line.length() - 4));
+                this.countryCodes.put(line.substring(0, line.length() - COUNTRY_CODE_LENGTH),
+                        line.substring(line.length() - SECTION_START_OFFSET, line.length() - SECTION_END_OFFSET));
             }
 
         }

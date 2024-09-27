@@ -30,6 +30,4 @@ public interface Translator {
      * @return the name of the country in the given language or null if no translation is available
      */
     String translate(String country, String language);
-
-
 }
