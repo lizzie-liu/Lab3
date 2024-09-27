@@ -34,7 +34,6 @@ public class LanguageCodeConverter {
                     .getClassLoader().getResource(filename).toURI()));
 
             for (String line : lines.subList(1, lines.size())) {
-                int length = line.length();
                 String[] languages = line.split("\t");
                 this.languageCodes.put(languages[0], languages[1]);
             }
